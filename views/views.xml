@@ -1,0 +1,48 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    
+    <record model="ir.ui.view" id="opain_custom_group_invoice">
+      <field name="name">opain_custom list</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form"/>
+      <field name="arch" type="xml">
+        <field name="function" position="after">
+          <field name="group_invoice"/>
+        </field>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_pos_pos_form_inherit">
+      <field name="name">opain_pos_pos form</field>
+      <field name="model">pos.order</field>
+      <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//sheet/div/button" position="after">
+              <button class="oe_stat_button"
+                            type="object"
+                            name="get_grouped_invoice"
+                            icon="fa-bolt">
+                            <field name="invoice_count"
+                                string="Facture groupée"
+                                widget="statinfo"/>
+              </button>
+        </xpath>
+      </field>
+    </record>
+
+        <!-- Automation Form View -->
+        <record id="prevent_archive_automated_action" model="base.automation">
+            <field name="name">Point de vente &amp; Facture groupée</field>
+            <field name="model_id" ref="model_pos_session"/>
+            <field name="trigger">on_write</field>
+            <field name="active" eval="True"/>
+            <field name="filter_domain">[["state","=","closed"]]</field>
+            <field name="state">code</field>
+            <field name="code">
+for record in records:
+  record._on_close_pos_session()
+            </field>
+        </record>
+  </data>
+</odoo>
